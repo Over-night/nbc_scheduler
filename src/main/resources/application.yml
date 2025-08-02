@@ -13,3 +13,6 @@ spring:
       hibernate:
         show_sql: true
         format_sql: true
+        jdbc:
+          lob:
+            non_contextual_creation: true
