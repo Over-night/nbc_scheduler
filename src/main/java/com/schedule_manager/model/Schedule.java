@@ -1,4 +1,4 @@
-package com.schedule_manager.models;
+package com.schedule_manager.model;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -7,7 +7,6 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Entity
 @EntityListeners(AuditingEntityListener.class)
@@ -18,7 +17,7 @@ import java.util.UUID;
 public class Schedule {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @Column(name = "user_id", nullable = false)

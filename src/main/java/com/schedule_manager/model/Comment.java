@@ -1,4 +1,4 @@
-package com.schedule_manager.models;
+package com.schedule_manager.model;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @Column(name = "user_id", nullable = false)
