@@ -55,8 +55,8 @@ public class User {
     public void updateNickname(String nickname) {
         this.nickname = nickname;
     }
-    public void updateEmail(String email) {
-        this.email = email;
-    }
 
+    public void updatePassword(String password) {
+        this.password = password;
+    }
 }
