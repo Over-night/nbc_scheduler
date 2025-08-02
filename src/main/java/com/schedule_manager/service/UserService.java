@@ -12,6 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -98,20 +99,22 @@ public class UserService {
         return makeUserResponseDto(savedUser);
     }
 
-    // TODO : 사용할곳 찾고 경우에 따라 반환
     @Transactional(readOnly = true)
     public UserResponseDto findById(UUID id) {
         User user = userRepository.findById(id)
                 .orElseThrow(IllegalStateException::new);
 
-        return UserResponseDto.builder().
-                id(user.getId()).
-                username(user.getUsername()).
-                nickname(user.getNickname()).
-                email(user.getEmail()).
-                createdAt(user.getCreatedAt()).
-                updatedAt(user.getUpdatedAt()).
-                deletedAt(user.getDeletedAt()).
-                build();
+        return makeUserResponseDto(user);
+    }
+
+    @Transactional(readOnly = true)
+    public User findByUsername(String username) {
+                return userRepository.findByUsername(username)
+                .orElseThrow(IllegalStateException::new);
+    }
+
+    @Transactional(readOnly = true)
+    public List<User> findAll() {
+        return userRepository.findAll();
     }
 }
