@@ -1,5 +1,6 @@
 package com.schedule_manager.controller;
 
+import com.schedule_manager.dto.user.UserResponseDto;
 import com.schedule_manager.model.User;
 import com.schedule_manager.service.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -17,13 +18,14 @@ public class UserController {
 
 
 
+
     @GetMapping("/users")
-    public List<User> getAllUsers() {
+    public List<UserResponseDto> getAllUsers() {
         return userService.findAll();
     }
 
     @GetMapping("/users/{username}")
-    public User getUserByUsername(@PathVariable String username) {
+    public UserResponseDto getUserByUsername(@PathVariable String username) {
         return userService.findByUsername(username);
     }
 

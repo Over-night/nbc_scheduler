@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -29,7 +30,6 @@ public class UserService {
                 email(savedUser.getEmail()).
                 createdAt(savedUser.getCreatedAt()).
                 updatedAt(savedUser.getUpdatedAt()).
-                deletedAt(savedUser.getDeletedAt()).
                 build();
     };
 
@@ -58,8 +58,8 @@ public class UserService {
     }
 
     @Transactional
-    public UserResponseDto updateUser(UserUpdateRequestDto dto) {
-        User user = userRepository.findById(dto.getId())
+    public UserResponseDto updateUser(UUID authenticatedUserId, UserUpdateRequestDto dto) {
+        User user = userRepository.findById(authenticatedUserId)
                 .orElseThrow(IllegalStateException::new);
 
         user.updateNickname(dto.getNickname());
@@ -73,13 +73,12 @@ public class UserService {
                 email(savedUser.getEmail()).
                 createdAt(savedUser.getCreatedAt()).
                 updatedAt(savedUser.getUpdatedAt()).
-                deletedAt(savedUser.getDeletedAt()).
                 build();
     }
 
     @Transactional
-    public UserResponseDto changeUserPassword(UserPasswordChangeRequestDto dto) {
-        User user = userRepository.findById(dto.getId())
+    public UserResponseDto changeUserPassword(UUID authenticatedUserId, UserPasswordChangeRequestDto dto) {
+        User user = userRepository.findById(authenticatedUserId)
                 .orElseThrow(IllegalStateException::new);
 
         String encodedOriginalPassword = passwordEncoder.encode(dto.getOriginalPassword());
@@ -108,13 +107,18 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public User findByUsername(String username) {
-                return userRepository.findByUsername(username)
-                .orElseThrow(IllegalStateException::new);
+    public UserResponseDto findByUsername(String username) {
+        return makeUserResponseDto(
+                userRepository.findByUsername(username)
+                .orElseThrow(IllegalStateException::new)
+        );
     }
 
     @Transactional(readOnly = true)
-    public List<User> findAll() {
-        return userRepository.findAll();
+    public List<UserResponseDto> findAll() {
+        return userRepository.findAll()
+                .stream()
+                .map(this::makeUserResponseDto)
+                .collect(Collectors.toList());
     }
 }

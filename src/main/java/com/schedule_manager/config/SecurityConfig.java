@@ -1,4 +1,4 @@
-package com.schedule_manager.dto.config;
+package com.schedule_manager.config;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
