@@ -1,16 +1,13 @@
-package com.schedule_manager.dto;
+package com.schedule_manager.dto.schedule;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.UUID;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CommentSingleRequestDto {
-    private UUID memberId;
-    private Long scheduleId;
+public class ScheduleUploadRequestDto {
+    private String title;
     private String content;
 }

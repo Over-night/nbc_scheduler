@@ -12,7 +12,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public class CommentResponseDto {
     private Long id;
-    private UUID userId;
+    private UUID memberId;
     private Long scheduleId;
     private String content;
     private LocalDateTime createdAt;

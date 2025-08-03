@@ -1,15 +1,13 @@
-package com.schedule_manager.dto.user;
+package com.schedule_manager.dto.member;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.UUID;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserPasswordChangeRequestDto {
+public class MemberPasswordChangeRequestDto {
     private String originalPassword;
     private String toChangePassword;
 }

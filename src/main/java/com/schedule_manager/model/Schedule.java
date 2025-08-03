@@ -2,17 +2,13 @@ package com.schedule_manager.model;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
-import java.time.LocalDateTime;
 
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "schedules")
 @Getter
-@ToString
+@ToString(exclude = "member")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Schedule extends BaseTimeEntity {
     @Id
@@ -20,8 +16,8 @@ public class Schedule extends BaseTimeEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @Column(name = "user_id", nullable = false)
-    private User user;
+    @JoinColumn(name = "member_id", nullable = false)
+    private Member member;
 
     @Column(nullable = false)
     private String title;
@@ -29,17 +25,19 @@ public class Schedule extends BaseTimeEntity {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
 
+
+
     @Builder
-    public Schedule(User user, String title, String content) {
-        this.user = user;
+    public Schedule(Member member, String title, String content) {
+        this.member = member;
         this.title = title;
         this.content = (content != null) ? content : "";
     }
 
-    private void updateTitle(String title) {
+    public void updateTitle(String title) {
         this.title = title;
     }
-    private void updateContent(String content) {
+    public void updateContent(String content) {
         this.content = content;
     }
 }

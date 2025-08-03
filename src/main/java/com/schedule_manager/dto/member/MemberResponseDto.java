@@ -1,4 +1,4 @@
-package com.schedule_manager.dto.user;
+package com.schedule_manager.dto.member;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,7 +12,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class UserResponseDto {
+public class MemberResponseDto {
     private UUID id;
     private String username;
     private String nickname;

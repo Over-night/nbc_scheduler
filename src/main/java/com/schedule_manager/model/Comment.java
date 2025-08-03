@@ -2,11 +2,7 @@ package com.schedule_manager.model;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
-import java.time.LocalDateTime;
 
 @Entity
 @EntityListeners(AuditingEntityListener.class)
@@ -20,19 +16,19 @@ public class Comment extends BaseTimeEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @Column(name = "user_id", nullable = false)
-    private User user;
+    @JoinColumn(name = "user_id", nullable = false)
+    private Member member;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @Column(name = "schedule_id", nullable = false)
+    @JoinColumn(name = "schedule_id", nullable = false)
     private Schedule schedule;
 
     @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
 
     @Builder
-    public Comment(User user, Schedule schedule, String content) {
-        this.user = user;
+    public Comment(Member member, Schedule schedule, String content) {
+        this.member = member;
         this.schedule = schedule;
         this.content = content;
     }
