@@ -15,6 +15,92 @@
 
 ---
 
+## 기술 스택
+- Java 21
+- Intellij IDEA
+
+
+---
+
+## 패키지 구조
+
+```bash
+src
+├── main
+│   ├── java
+│   │   └── com
+│   │       └── schedule_manager
+│   │           ├── ScheduleManagerApplication.java
+│   │           ├── auth
+│   │           │   └── dto
+│   │           │       └── JwtTokenDto.java
+│   │           ├── config
+│   │           │   └── SecurityConfig.java
+│   │           ├── controller
+│   │           │   ├── CommentController.java
+│   │           │   ├── MemberController.java
+│   │           │   └── ScheduleController.java
+│   │           ├── dto
+│   │           │   ├── comment
+│   │           │   │   ├── CommentDeleteResponseDto.java
+│   │           │   │   ├── CommentResponseDto.java
+│   │           │   │   ├── CommentReviseRequestDto.java
+│   │           │   │   ├── CommentReviseResponseDto.java
+│   │           │   │   ├── CommentUploadRequestDto.java
+│   │           │   │   └── CommentUploadResponseDto.java
+│   │           │   ├── member
+│   │           │   │   ├── MemberLoginRequestDto.java
+│   │           │   │   ├── MemberPasswordChangeRequestDto.java
+│   │           │   │   ├── MemberRegisterRequestDto.java
+│   │           │   │   ├── MemberRegisterResponseDto.java
+│   │           │   │   ├── MemberResponseDto.java
+│   │           │   │   └── MemberUpdateRequestDto.java
+│   │           │   └── schedule
+│   │           │       ├── ScheduleDeleteResponseDto.java
+│   │           │       ├── ScheduleResponseDto.java
+│   │           │       ├── ScheduleReviseRequestDto.java
+│   │           │       ├── ScheduleReviseResponseDto.java
+│   │           │       ├── ScheduleUploadRequestDto.java
+│   │           │       └── ScheduleWithCommentResponseDto.java
+│   │           ├── model
+│   │           │   ├── BaseTimeEntity.java
+│   │           │   ├── Comment.java
+│   │           │   ├── Member.java
+│   │           │   └── Schedule.java
+│   │           ├── repository
+│   │           │   ├── CommentRepository.java
+│   │           │   ├── MemberRepository.java
+│   │           │   └── ScheduleRepository.java
+│   │           ├── security
+│   │           │   ├── JwtAuthenticationFilter.java
+│   │           │   └── JwtTokenProvider.java
+│   │           └── service
+│   │               ├── AuthService.java
+│   │               ├── CommentService.java
+│   │               ├── CustomUserDetailsService.java
+│   │               ├── MemberService.java
+│   │               └── ScheduleService.java
+│   └── resources
+│       ├── application.yml
+│       ├── application_temp.yml
+│       ├── static
+│       └── templates
+└── test
+    └── java
+        └── com
+            └── schedule_manager
+                └── ScheduleManagerApplicationTests.java
+
+```
+
+---
+
+## 실행방법
+
+```src/main/java/com/schedule_manager/ScheduleManagerApplication.java``` 메인 메서드 실행
+
+---
+
 ## 주요 사용자 기능
 
 | 기능     | 설명          |
