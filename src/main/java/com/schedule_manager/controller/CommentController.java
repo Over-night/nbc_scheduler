@@ -34,7 +34,7 @@ public class CommentController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @GetMapping("/search/id/{id}")
+    @GetMapping("/search/{id}")
     public ResponseEntity<CommentResponseDto> findCommentById(@PathVariable Long id) {
         CommentResponseDto foundedCommentById = commentService.findById(id);
         return ResponseEntity.ok(foundedCommentById);

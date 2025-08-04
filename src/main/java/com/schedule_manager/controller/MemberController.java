@@ -5,7 +5,6 @@ import com.schedule_manager.dto.member.MemberLoginRequestDto;
 import com.schedule_manager.dto.member.MemberRegisterRequestDto;
 import com.schedule_manager.dto.member.MemberRegisterResponseDto;
 import com.schedule_manager.dto.member.MemberResponseDto;
-import com.schedule_manager.repository.MemberRepository;
 import com.schedule_manager.service.AuthService;
 import com.schedule_manager.service.MemberService;
 import lombok.RequiredArgsConstructor;
@@ -18,28 +17,25 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/members")
+@RequestMapping("/member")
 public class MemberController {
     private final MemberService memberService;
     private final AuthService authService;
 
-    @PostMapping
-    public ResponseEntity<MemberRegisterResponseDto> register(@RequestBody MemberRegisterRequestDto dto) {
-        return ResponseEntity.ok(authService.register(dto));
-    }
-
+    // /members
     @GetMapping
     public ResponseEntity<List<MemberResponseDto>> getAllUsers() {
         List<MemberResponseDto> allUsers = memberService.findAll();
         return ResponseEntity.ok(allUsers);
     }
 
-    @GetMapping("id/{username}")
-    public ResponseEntity<MemberResponseDto> getUserByUsername(@PathVariable String username) {
-        MemberResponseDto foundUser = memberService.findByUsername(username);
-        return ResponseEntity.ok(foundUser);
+    @PostMapping
+    public ResponseEntity<MemberRegisterResponseDto> register(@RequestBody MemberRegisterRequestDto dto) {
+        return ResponseEntity.ok(authService.register(dto));
     }
 
+
+    // /members/login
     @PostMapping("/login")
     public JwtTokenDto login(@RequestBody MemberLoginRequestDto dto) {
         String username = dto.getUsername();
@@ -49,9 +45,12 @@ public class MemberController {
     }
 
 
-    // Test
-    @PostMapping("/test")
-    public String test() {
-        return "success";
+    // /members/{username}
+    @GetMapping("/{username}")
+    public ResponseEntity<MemberResponseDto> getUserByUsername(@PathVariable String username) {
+        MemberResponseDto foundUser = memberService.findByUsername(username);
+        return ResponseEntity.ok(foundUser);
     }
+
+
 }
