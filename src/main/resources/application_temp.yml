@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: schedule_manager
+  datasource:
+    url: { fill this area }
+    username: { fill this area }
+    password: { fill this area }
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+        jdbc:
+          lob:
+            non_contextual_creation: true
+jwt:
+  secret: { fill this area }
