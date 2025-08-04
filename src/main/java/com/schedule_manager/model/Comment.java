@@ -8,7 +8,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "comments")
 @Getter
-@ToString
+@ToString(exclude = {"member", "schedule"})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Comment extends BaseTimeEntity {
     @Id

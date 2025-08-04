@@ -28,8 +28,7 @@ public class Schedule extends BaseTimeEntity {
     @Column(nullable = false, columnDefinition = "TEXT", length = 1000)
     private String content;
 
-
-    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "schedule", fetch = FetchType.LAZY)
     private List<Comment> comments = new ArrayList<>();
 
     @Builder
