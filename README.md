@@ -121,3 +121,5 @@ src
 ## 비고
 - 인증방식 : Bearer ```Authorization: Bearer {accessToken}```
 - application_temp.yml을 application.yml로 이름 변경 후 별개의 설정 필요
+- ERD Diagram : https://www.notion.so/ERD-245889903f748011b1c2c54877563f4e?source=copy_link
+- API Document : https://www.notion.so/API-243889903f74807ea269d968af68a2dc?source=copy_link
