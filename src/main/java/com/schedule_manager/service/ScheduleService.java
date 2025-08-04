@@ -1,10 +1,12 @@
 package com.schedule_manager.service;
 
+import com.schedule_manager.dto.comment.CommentResponseDto;
 import com.schedule_manager.dto.schedule.*;
 import com.schedule_manager.model.Schedule;
 import com.schedule_manager.model.Member;
 import com.schedule_manager.repository.ScheduleRepository;
 import com.schedule_manager.repository.MemberRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -56,6 +58,9 @@ public class ScheduleService {
                 .orElseThrow(IllegalStateException::new);
 
         // 현재는 작성자만 사용가능
+        if (schedule.getDeletedAt() != null) {
+            throw new BadCredentialsException("이미 삭제된 스케쥴입니다.");
+        }
         if (!schedule.getMember().getId().equals(member.getId())) {
             throw new BadCredentialsException("작성자만 수정할 수 있습니다.");
         }
@@ -79,6 +84,9 @@ public class ScheduleService {
                 .orElseThrow(IllegalStateException::new);
 
         // 현재는 작성자만 사용가능
+        if (schedule.getDeletedAt() != null) {
+            throw new BadCredentialsException("이미 삭제된 스케쥴입니다.");
+        }
         if (!schedule.getMember().getId().equals(member.getId())) {
             throw new BadCredentialsException("작성자만 삭제할 수 있습니다.");
         }
@@ -93,11 +101,35 @@ public class ScheduleService {
     }
 
     @Transactional(readOnly = true)
-    public ScheduleResponseDto findById(Long id) {
-        return makeScheduleResponse(
-                scheduleRepository.findById(id)
-                        .orElseThrow(IllegalStateException::new)
-        );
+    public ScheduleWithCommentResponseDto findById(Long id) {
+        Schedule schedule = scheduleRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("찾으려는 스케쥴이 없습니다."));
+
+        if(schedule.getDeletedAt() != null) {
+            throw new BadCredentialsException("이미 삭제된 스케쥴입니다.");
+        }
+
+        List<CommentResponseDto> comments = schedule.getComments().stream()
+                .map(comment -> CommentResponseDto.builder().
+                        id(comment.getId()).
+                        memberId(comment.getMember().getId()).
+                        scheduleId(comment.getSchedule().getId()).
+                        content(comment.getContent()).
+                        createdAt(comment.getCreatedAt()).
+                        updatedAt(comment.getUpdatedAt()).
+                        build()
+                )
+                .collect(Collectors.toList());
+
+        return ScheduleWithCommentResponseDto.builder().
+                id(schedule.getId()).
+                memberId(schedule.getMember().getId()).
+                title(schedule.getTitle()).
+                content(schedule.getContent()).
+                createdAt(schedule.getCreatedAt()).
+                updatedAt(schedule.getUpdatedAt()).
+                comments(comments).
+                build();
     }
 
     @Transactional(readOnly = true)

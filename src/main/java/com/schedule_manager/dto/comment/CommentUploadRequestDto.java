@@ -1,4 +1,4 @@
-package com.schedule_manager.dto;
+package com.schedule_manager.dto.comment;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,8 +9,6 @@ import java.util.UUID;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CommentSingleRequestDto {
-    private UUID memberId;
-    private Long scheduleId;
+public class CommentUploadRequestDto {
     private String content;
 }

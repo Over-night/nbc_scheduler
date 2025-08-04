@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "schedules")
@@ -26,6 +29,8 @@ public class Schedule extends BaseTimeEntity {
     private String content;
 
 
+    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY)
+    private List<Comment> comments = new ArrayList<>();
 
     @Builder
     public Schedule(Member member, String title, String content) {

@@ -1,6 +1,8 @@
 package com.schedule_manager.controller;
 
+import com.schedule_manager.dto.comment.*;
 import com.schedule_manager.dto.schedule.*;
+import com.schedule_manager.service.CommentService;
 import com.schedule_manager.service.ScheduleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +21,7 @@ import java.util.List;
 @Slf4j
 public class ScheduleController {
     private final ScheduleService scheduleService;
+    private final CommentService commentService;
 
     @GetMapping
     public ResponseEntity<List<ScheduleResponseDto>> getAllSchedules() {
@@ -36,9 +39,19 @@ public class ScheduleController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ScheduleResponseDto> getScheduleById(@PathVariable Long id) {
-        ScheduleResponseDto foundScheduleById = scheduleService.findById(id);
+    public ResponseEntity<ScheduleWithCommentResponseDto> getScheduleById(@PathVariable Long id) {
+        ScheduleWithCommentResponseDto foundScheduleById = scheduleService.findById(id);
         return ResponseEntity.ok(foundScheduleById);
+    }
+
+    @PostMapping("/{id}")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<CommentUploadResponseDto> uploadComment(@PathVariable Long id,
+                                                                    @RequestBody CommentUploadRequestDto dto,
+                                                                    @AuthenticationPrincipal UserDetails userDetails) {
+        String username = userDetails.getUsername();
+        CommentUploadResponseDto response = commentService.uploadComment(id, username, dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @PutMapping("/{id}")
@@ -58,6 +71,26 @@ public class ScheduleController {
         String username = userDetails.getUsername();
         ScheduleDeleteResponseDto response = scheduleService.deleteSchedule(id, username);
         return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @PutMapping("/{id}/comments/{comment_id}")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<CommentReviseResponseDto> reviseComment(@PathVariable Long id,
+                                                                  @PathVariable Long comment_id,
+                                                                    @RequestBody CommentReviseRequestDto dto,
+                                                                    @AuthenticationPrincipal UserDetails userDetails) {
+        String username = userDetails.getUsername();
+        CommentReviseResponseDto response = commentService.reviseComment(id, comment_id, username, dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+    @DeleteMapping("/{id}/comments/{comment_id}")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<CommentDeleteResponseDto> deleteComment(@PathVariable Long id,
+                                                                  @PathVariable Long comment_id,
+                                                                  @AuthenticationPrincipal UserDetails userDetails) {
+        String username = userDetails.getUsername();
+        CommentDeleteResponseDto response = commentService.deleteComment(id, comment_id, username);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping("/member/{username}")
