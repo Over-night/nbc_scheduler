@@ -1,8 +1,6 @@
 package com.schedule_manager.service;
 
-import com.schedule_manager.dto.schedule.ScheduleResponseDto;
-import com.schedule_manager.dto.schedule.ScheduleReviseRequestDto;
-import com.schedule_manager.dto.schedule.ScheduleUploadRequestDto;
+import com.schedule_manager.dto.schedule.*;
 import com.schedule_manager.model.Schedule;
 import com.schedule_manager.model.Member;
 import com.schedule_manager.repository.ScheduleRepository;
@@ -14,7 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -22,7 +19,6 @@ import java.util.stream.Collectors;
 public class ScheduleService {
     private final MemberRepository memberRepository;
     private final ScheduleRepository scheduleRepository;
-    private final PasswordEncoder passwordEncoder;
 
     private ScheduleResponseDto makeScheduleResponse(Schedule savedSchedule) {
         return ScheduleResponseDto.builder().
@@ -36,8 +32,8 @@ public class ScheduleService {
     };
 
     @Transactional
-    public ScheduleResponseDto uploadSchedule(UUID authenticatedUserId, ScheduleUploadRequestDto dto) {
-        Member member = memberRepository.findById(authenticatedUserId)
+    public ScheduleResponseDto uploadSchedule(String username, ScheduleUploadRequestDto dto) {
+        Member member = memberRepository.findByUsername(username)
                 .orElseThrow(IllegalStateException::new);
 
 
@@ -53,23 +49,47 @@ public class ScheduleService {
     }
 
     @Transactional
-    public ScheduleResponseDto reviseSchedule(UUID authenticatedUserId, ScheduleReviseRequestDto dto) {
-        Member member = memberRepository.findById(authenticatedUserId)
+    public ScheduleReviseResponseDto reviseSchedule(Long id, String username, ScheduleReviseRequestDto dto) {
+        Member member = memberRepository.findByUsername(username)
                 .orElseThrow(IllegalStateException::new);
-        Schedule schedule = scheduleRepository.findById(dto.getId())
+        Schedule schedule = scheduleRepository.findById(id)
                 .orElseThrow(IllegalStateException::new);
 
         // 현재는 작성자만 사용가능
         if (!schedule.getMember().getId().equals(member.getId())) {
-            throw new BadCredentialsException("삭제 권한이 없습니다.");
+            throw new BadCredentialsException("작성자만 수정할 수 있습니다.");
         }
 
-        schedule.updateTitle(dto.getTitle());
-        schedule.updateContent(dto.getContent());
+        schedule.update(dto.getTitle(), dto.getContent());
 
-        Schedule savedSchedule = scheduleRepository.save(schedule);
+        return ScheduleReviseResponseDto.builder().
+                id(schedule.getId()).
+                memberId(schedule.getMember().getId()).
+                title(schedule.getTitle()).
+                content(schedule.getContent()).
+                updatedAt(schedule.getUpdatedAt()).
+                build();
+    }
 
-        return makeScheduleResponse(savedSchedule);
+    @Transactional
+    public ScheduleDeleteResponseDto deleteSchedule(Long id, String username) {
+        Member member = memberRepository.findByUsername(username)
+                .orElseThrow(IllegalStateException::new);
+        Schedule schedule = scheduleRepository.findById(id)
+                .orElseThrow(IllegalStateException::new);
+
+        // 현재는 작성자만 사용가능
+        if (!schedule.getMember().getId().equals(member.getId())) {
+            throw new BadCredentialsException("작성자만 삭제할 수 있습니다.");
+        }
+
+        schedule.delete();
+
+        return ScheduleDeleteResponseDto.builder().
+                id(schedule.getId()).
+                memberId(schedule.getMember().getId()).
+                deletedAt(schedule.getUpdatedAt()).
+                build();
     }
 
     @Transactional(readOnly = true)
@@ -87,12 +107,33 @@ public class ScheduleService {
 
         return scheduleRepository.findByMember(owner)
                 .stream()
+                .filter(schedule -> schedule.getDeletedAt() == null)
+                .map(this::makeScheduleResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<ScheduleResponseDto> findByUsernameIncludingDeleted(String username) {
+        Member owner = memberRepository.findByUsername(username)
+                .orElseThrow(IllegalStateException::new);
+
+        return scheduleRepository.findByMember(owner)
+                .stream()
                 .map(this::makeScheduleResponse)
                 .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
     public List<ScheduleResponseDto> findAll() {
+        return scheduleRepository.findAll()
+                .stream()
+                .filter(schedule -> schedule.getDeletedAt() == null)
+                .map(this::makeScheduleResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<ScheduleResponseDto> findAllIncludingDeleted() {
         return scheduleRepository.findAll()
                 .stream()
                 .map(this::makeScheduleResponse)

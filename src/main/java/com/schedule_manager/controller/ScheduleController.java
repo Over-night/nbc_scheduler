@@ -1,50 +1,80 @@
 package com.schedule_manager.controller;
 
-import com.schedule_manager.dto.schedule.ScheduleResponseDto;
+import com.schedule_manager.dto.schedule.*;
 import com.schedule_manager.service.ScheduleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
+@RequestMapping("/schedules")
 @RequiredArgsConstructor
 @Slf4j
 public class ScheduleController {
     private final ScheduleService scheduleService;
 
-    @GetMapping("/schedule")
+    @GetMapping
     public ResponseEntity<List<ScheduleResponseDto>> getAllSchedules() {
         List<ScheduleResponseDto> allSchedule = scheduleService.findAll();
         return ResponseEntity.ok(allSchedule);
     }
 
-//    @PostMapping("/schedule")
-//    public ResponseEntity<ScheduleResponseDto> createSchedule(@RequestBody @Valid ScheduleUploadRequestDto requestDto,
-//                                                              @AuthenticationPrincipal ) {
-//        List<ScheduleResponseDto> allSchedule = scheduleService.findAll();
-//        return ResponseEntity.ok(allSchedule);
-//    }
-//
-//    @PostMapping
-//    public ResponseEntity<PostResponseDto> createPost(@RequestBody @Valid PostCreateRequestDto requestDto,
-//                                                      @AuthenticationPrincipal UserPrincipal userPrincipal) {
-//        UUID userId = userPrincipal.getId(); // 로그인된 사용자 ID
-//        PostResponseDto responseDto = postService.createPost(requestDto, userId);
-//        return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
-//    }
+    @PostMapping
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<ScheduleResponseDto> uploadSchedule(@RequestBody ScheduleUploadRequestDto dto,
+                                                      @AuthenticationPrincipal UserDetails userDetails) {
+        String username = userDetails.getUsername();
+        ScheduleResponseDto response = scheduleService.uploadSchedule(username, dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
 
-    @GetMapping("/schedule/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<ScheduleResponseDto> getScheduleById(@PathVariable Long id) {
         ScheduleResponseDto foundScheduleById = scheduleService.findById(id);
         return ResponseEntity.ok(foundScheduleById);
     }
 
-    @GetMapping("/schedule/user/{username}")
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<ScheduleReviseResponseDto> uploadSchedule(@PathVariable Long id,
+                                                                    @RequestBody ScheduleReviseRequestDto dto,
+                                                                    @AuthenticationPrincipal UserDetails userDetails) {
+        String username = userDetails.getUsername();
+        ScheduleReviseResponseDto response = scheduleService.reviseSchedule(id, username, dto);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<ScheduleDeleteResponseDto> deleteSchedule(@PathVariable Long id,
+                                                                    @AuthenticationPrincipal UserDetails userDetails) {
+        String username = userDetails.getUsername();
+        ScheduleDeleteResponseDto response = scheduleService.deleteSchedule(id, username);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @GetMapping("/member/{username}")
     public ResponseEntity<List<ScheduleResponseDto>> getSchedulesByUsername(@PathVariable String username) {
         List<ScheduleResponseDto> foundScheduleByUsername = scheduleService.findByUsername(username);
+        return ResponseEntity.ok(foundScheduleByUsername);
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<List<ScheduleResponseDto>> getAllSchedulesIncludingDeleted() {
+        List<ScheduleResponseDto> allSchedule = scheduleService.findAllIncludingDeleted();
+        return ResponseEntity.ok(allSchedule);
+    }
+
+    @GetMapping("/all/member/{username}")
+    public ResponseEntity<List<ScheduleResponseDto>> getSchedulesByUsernameIncludingDeleted(@PathVariable String username) {
+        List<ScheduleResponseDto> foundScheduleByUsername = scheduleService.findByUsernameIncludingDeleted(username);
         return ResponseEntity.ok(foundScheduleByUsername);
     }
 }

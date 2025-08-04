@@ -25,4 +25,8 @@ public class BaseTimeEntity {
     @Column(name = "deleted_at")
     @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime deletedAt;
+
+    public void delete() {
+        this.deletedAt = LocalDateTime.now();
+    }
 }
